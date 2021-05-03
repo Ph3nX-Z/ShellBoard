@@ -22,7 +22,7 @@ ShellBoard
 #kill          : kill the program and the reverse shell
 #exit          : quit the shell and return to command panel
 #decal         : skip a request to realign the terminal with the commands
-#other:command : use control panel's command in the shell
+#other:command : use control panel's command in the shell ex: #other:deliver_file
 ```
 
 ### In the Control Panel :
