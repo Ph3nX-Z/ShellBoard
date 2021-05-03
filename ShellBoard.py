@@ -293,7 +293,7 @@ def start_listener(port):
 
 	command_pannel = True
 
-	disponible_commands = ["\n-> Exploitation:","shell  : Invoke shell","\n-> Interface:","exit  : kill the reverse shell","other  : Display specific commands", "\n-> Inside Rev Shell Commands:","#help  : Display help message"]
+	disponible_commands = ["\n-> Exploitation:","shell  : Invoke shell","\n-> Interface:","exit  : kill the reverse shell","other  : Display specific commands","help  : display this message", "\n-> Inside Rev Shell Commands:","#help  : Display help message"]
 	other_commands = {"tty":"Invoke tty","exploit_bin":"Search for exploitable binaries","deliver_file":"Upload files"}
 	shell_commands = ["#help  : Display this message","#kill  : Exit the reverse shell and the program", "#exit  : Return to command panel","#decal  : decal shell commands if not synchronized","#other:command  : use command panel's commands"]
 
