@@ -43,7 +43,7 @@ deliver_file : upload a file
 ## Examples
 
 ```sh
-Shellboard
+ShellBoard
 ```
 
 ## Contributing
