@@ -33,6 +33,13 @@ other : display other commands (postexploitation commands)
 help  : display help message
 ```
 
+### Post Exploitation module :
+```sh
+exploit_bin  : search for vulnerable suids,capatibilities
+tty          : invoke tty, already invoked in the process
+deliver_file : upload a file
+```
+
 ## Examples
 
 ```sh
