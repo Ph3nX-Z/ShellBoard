@@ -4,7 +4,7 @@ Reverse shell generator
 ![](img/shell.jpg)
 
 ## Presentation
-ShellBoard is a reverse shell generator and can be used as a listener for theses. A lot of postexploitation modules are included in it.
+ShellBoard is a reverse shell generator and it can be used as a listener for theses. A lot of post-exploitation modules are included in it.
 
 ## Usage
 ### Linux :
